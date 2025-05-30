@@ -1,4 +1,136 @@
+**Proposal Submission**
+
 **Stay4less**
+
+2.	**Problem Statement:**
+   
+International students arriving in Canada often struggle to find safe and affordable housing due to a lack of platforms that cater their needs. Common rental sites are too broad, and accommodation companies charge hefty amounts of money to find a place. This project seeks to create a student-focused housing platform to connect students with accessible and reliable housing opportunities
+------------------------------------------------------------------------------------------------------------------------------------------------------
+3. **Overview of the Application’s Functionality:**
+   
+The app will allow users to:
+•	Create accounts as either students or landlords.
+
+•	Students can search for accommodation by city, institution, price, or housing type (shared, private, homestay, etc.)
+
+•	Landlords can post and manage listings with images, pricing, and descriptions.
+
+•	A built-in messaging system will allow students to directly contact landlords.
+
+•	Students will be able to save listings and leave reviews based on their rental experience.
+
+•	The app will include an admin panel to manage users and verify listings.
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+4.**Technology Stack:**
+   
+**Frontend:**
+
+•	React 
+
+•	Tailwind CSS 
+
+•	React Router 
+
+•	Axios 
+
+•	MapBox
+
+**Backend:**
+
+•	Node.js  
+
+•	Express.js
+
+•	JWT (JSON WEB TOKENS) 
+
+•	Bcrypt 
+
+•	MongoDB Atlas
+
+ **Deployment:**
+ 
+•	AWS
+
+•	Cloudinary
+
+**Other tools:**
+•	Postman
+
+•	Github
+----------------------------------------------------------------------------------------------------------------------------------------
+5.	**Features to be Implemented:**
+   
+Core features:
+
+-User creation and authentication
+
+•	Register/login as student or landlord
+
+-Role-Based Access
+
+•	Students and landlords have different dashboard views and permissions
+
+-Property Listings
+
+•	Landlords can create, edit, and delete their listings
+
+•	Listings will allow images, location, price, and description
+
+-Search & Filtering
+
+•	Students can search by city, institution, price, and housing type
+              
+Inquiry Submission 
+
+•	Students can contact landlords via inquiry form
+
+-Favorite Listings
+
+•	Students can save listings to view later
+
+-Reviews & Ratings
+
+•	Students can leave reviews after their experience
+
+-Admin Panel
+
+•	Admin can manage users and listings
+
+Stretch Features
+
+•	Live chatting
+
+•	Email notifications
+
+•	O2auth
+
+
+7.	User Stories:
+
+As a student:
+-	As a student, I want to search and filter listings by city, institution, price, and housing type so that I can find accommodation that fits my needs.
+-	As a student, I want to create an account so that I can access accommodation listings and save my preferences.
+-	As a student, I want to send an inquiry to a landlord so that I can ask questions about a property I’m interested in.
+  
+As a landlord:
+-	As a landlord, I want to create an account so that I can publish and manage my listings.
+-	As a landlord, I want to edit or delete my listings to keep the information accurate and up to date.
+
+As an admin:
+-	As an admin, I want to view all users and listings so I can manage the platform effectively.
+-	As an admin, I want to ban users or listings that violate the platform’s guidelines.
+
+
+
+
+
+
+
+
+
+
+
+
  
 **High-Level Design**
 
