@@ -1,23 +1,31 @@
 const Listing = require('../models/Listing');
 
 
+const geocodeAddress = require('../config/mapbox');
+
 exports.createListing = async (req, res) => {
   try {
     if (req.user.role !== 'landlord') {
       return res.status(403).json({ msg: 'Only landlords can create listings' });
     }
 
+    const { location } = req.body;
+    const coordinates = await geocodeAddress(location); 
+
     const newListing = new Listing({
       ...req.body,
-      landlord: req.user.id
+      landlord: req.user.id,
+      coordinates 
     });
 
     const savedListing = await newListing.save();
     res.status(201).json(savedListing);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
 
 
 exports.getAllListings = async (req, res) => {
