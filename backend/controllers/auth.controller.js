@@ -52,20 +52,19 @@ exports.registerUser = async (req, res) => {
 };
 
 
-// @desc Login existing user
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
+   
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
 
-    // Check password
+    
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
 
-    // Generate JWT
+    
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: '1d',
     });
