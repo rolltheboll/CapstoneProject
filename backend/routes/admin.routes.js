@@ -8,7 +8,7 @@ const {
   deleteListing
 } = require('../controllers/admin.controller');
 
-// Admin endpoints
+
 router.get('/users', auth, getAllUsers);               
 router.delete('/users/:userId', auth, deleteUser);     
 router.get('/listings', auth, getAllListings);         
