@@ -12,8 +12,10 @@ exports.addFavorite = async (req, res) => {
       student: req.user.id,
       listing: listingId
     });
+    
 
     const saved = await favorite.save();
+    console.log('Saved favorite:', saved);
     res.status(201).json(saved);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });

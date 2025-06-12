@@ -1,11 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const {
-  submitInquiry,
-  getInquiriesForLandlord,
-  getMyInquiries
-} = require('../controllers/inquiry.controller');
+const {submitInquiry,getInquiriesForLandlord,getMyInquiries} = require('../controllers/inquiry.controller');
 
 
 router.post('/', auth, submitInquiry);
