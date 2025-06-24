@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -12,15 +14,16 @@ export default function App() {
   return (
     <Router>
       <MainLayout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/listings" element={<Listings />} />
-          <Route path="/listings/:id" element={<ListingDetails />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<AdminPanel />} />
-        </Routes>
+    <Routes>
+       <Route path="/" element={<Home />} />
+       <Route path="/login" element={<Login />} />
+       <Route path="/register" element={<Register />} />
+       <Route path="/listings" element={<Listings />} />
+       <Route path="/listings/:id" element={<ListingDetails />} />
+       <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['student', 'landlord']}><Dashboard /></ProtectedRoute>} />
+       <Route path="/admin" element={ <ProtectedRoute allowedRoles="admin"><AdminPanel /></ProtectedRoute>} />
+    </Routes>
+
       </MainLayout>
     </Router>
   );
