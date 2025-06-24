@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Listings from './pages/Listings';
 import ListingDetails from './pages/ListingDetails';
 import Dashboard from './pages/Dashboard';
+import StudentDashboard from './pages/StudentDashboard';
 import AdminPanel from './pages/AdminPanel';
 import MainLayout from './layouts/MainLayout';
 
@@ -20,7 +21,8 @@ export default function App() {
        <Route path="/register" element={<Register />} />
        <Route path="/listings" element={<Listings />} />
        <Route path="/listings/:id" element={<ListingDetails />} />
-       <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['student', 'landlord']}><Dashboard /></ProtectedRoute>} />
+       <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['landlord']}><Dashboard /></ProtectedRoute>} />
+       <Route path="/student-dashboard" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>}/>
        <Route path="/admin" element={ <ProtectedRoute allowedRoles="admin"><AdminPanel /></ProtectedRoute>} />
     </Routes>
 
