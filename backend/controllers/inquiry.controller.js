@@ -53,3 +53,20 @@ exports.getMyInquiries = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+exports.deleteInquiry = async (req, res) => {
+  try {
+    const inquiry = await Inquiry.findById(req.params.id);
+    if (!inquiry) return res.status(404).json({ msg: 'Inquiry not found' });
+
+    if (inquiry.student.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ msg: 'Not authorized to delete this inquiry' });
+    }
+
+    await inquiry.deleteOne();
+    res.status(200).json({ msg: 'Inquiry deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};

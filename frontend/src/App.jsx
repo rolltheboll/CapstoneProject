@@ -4,8 +4,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ProfilePage from './pages/ProfilePage';
 import Listings from './pages/Listings';
 import ListingDetails from './pages/ListingDetails';
+import CreateListing from './pages/CreateListing';
+import EditListing from './pages/EditListing';
 import Dashboard from './pages/Dashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminPanel from './pages/AdminPanel';
@@ -19,7 +22,10 @@ export default function App() {
        <Route path="/" element={<Home />} />
        <Route path="/login" element={<Login />} />
        <Route path="/register" element={<Register />} />
+       <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>}/>
        <Route path="/listings" element={<Listings />} />
+       <Route path="/create-listing" element={<ProtectedRoute allowedRoles={['landlord']}><CreateListing /></ProtectedRoute>}/>
+       <Route path="/edit-listing/:id" element={<EditListing />} />
        <Route path="/listings/:id" element={<ListingDetails />} />
        <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['landlord']}><Dashboard /></ProtectedRoute>} />
        <Route path="/student-dashboard" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>}/>

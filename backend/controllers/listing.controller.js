@@ -45,19 +45,31 @@ exports.getMyListings = async (req, res) => {
 
 exports.getAllListings = async (req, res) => {
   try {
-    const { city, housingType, maxPrice } = req.query;
+    const { location, housingType, priceMin, priceMax } = req.query;
     let filter = {};
 
-    if (city) filter.location = new RegExp(city, 'i'); 
-    if (housingType) filter.housingType = housingType;
-    if (maxPrice) filter.price = { $lte: maxPrice };
+    if (location) {
+      filter.location = { $regex: new RegExp(location, 'i') }; 
+    }
+
+    if (housingType) {
+      filter.housingType = housingType;
+    }
+
+    if (priceMin || priceMax) {
+      filter.price = {};
+      if (priceMin) filter.price.$gte = Number(priceMin);
+      if (priceMax) filter.price.$lte = Number(priceMax);
+    }
 
     const listings = await Listing.find(filter).populate('landlord', 'name');
     res.status(200).json(listings);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
 
 
 

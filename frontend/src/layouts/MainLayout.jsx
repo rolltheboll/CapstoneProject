@@ -1,21 +1,31 @@
+import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+const isTransparentRoute = (path) => {
+  return (
+    path === '/login' ||
+    path === '/register' ||
+    path === '/listings' ||
+    path.startsWith('/profile')
+  );
+};
+
 export default function MainLayout({ children }) {
+  const location = useLocation();
+  const transparent = isTransparentRoute(location.pathname);
+
   return (
     <div
-      className="w-screen h-screen bg-cover bg-center flex flex-col"
-      style={{ backgroundImage: 'url(\"/assets/background.jpg\")' }}
+      className="min-h-screen flex flex-col bg-cover bg-center"
+      style={{ backgroundImage: 'url("/assets/background.jpg")' }}
     >
       <Navbar />
-
-      {}
-      <div className="flex-1 flex items-center justify-center px-4 py-6">
-        <main className="w-full max-w-md bg-white bg-opacity-90 p-6 rounded shadow-lg">
+      <main className="flex-grow p-6 flex justify-center">
+        <div className={`w-full max-w-5xl ${!transparent ? 'bg-white bg-opacity-80 p-6 rounded-lg shadow-md' : ''}`}>
           {children}
-        </main>
-      </div>
-
+        </div>
+      </main>
       <Footer />
     </div>
   );
