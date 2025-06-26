@@ -158,6 +158,13 @@ export default function Listings() {
               className="block border rounded p-4 shadow hover:shadow-lg transition bg-white bg-opacity-90"
             >
               <Link to={`/listings/${listing._id}`}>
+                {listing.images?.length > 0 && (
+                  <img
+                    src={listing.images[0]}
+                    alt={listing.title}
+                    className="w-full h-40 object-cover rounded mb-2"
+                  />
+                )}
                 <h2 className="text-xl font-semibold mb-2">{listing.title}</h2>
                 <p className="text-gray-600 mb-1">{listing.location}</p>
                 <p className="text-blue-600 font-bold">${listing.price}</p>

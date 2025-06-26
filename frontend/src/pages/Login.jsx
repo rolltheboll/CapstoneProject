@@ -19,7 +19,7 @@ export default function Login() {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', formData);
       login({ ...res.data.user, token: res.data.token });
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.msg || 'Login failed');
     }
