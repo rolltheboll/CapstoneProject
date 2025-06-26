@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
+  const { logout } = useAuth(); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,8 +38,8 @@ export default function ProfilePage() {
         },
       });
 
-      localStorage.removeItem('token');
-      navigate('/'); 
+      logout();          
+      navigate('/login'); 
     } catch (err) {
       console.error('Failed to delete account:', err);
     }
