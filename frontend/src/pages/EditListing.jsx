@@ -11,6 +11,8 @@ export default function EditListing() {
   const [location, setLocation] = useState('');
   const [price, setPrice] = useState('');
   const [housingType, setHousingType] = useState('');
+  const [images, setImages] = useState([]);
+  const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -22,6 +24,7 @@ export default function EditListing() {
         setLocation(listing.location);
         setPrice(listing.price);
         setHousingType(listing.housingType);
+        setImages(listing.images || []);
       } catch (err) {
         console.error('Failed to fetch listing:', err);
       }
@@ -34,7 +37,7 @@ export default function EditListing() {
     try {
       await axios.put(
         `http://localhost:5000/api/listings/${id}`,
-        { title, description, location, price, housingType },
+        { title, description, location, price, housingType, images },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -45,6 +48,28 @@ export default function EditListing() {
     } catch (err) {
       console.error('Failed to update listing:', err);
     }
+  };
+
+  const handleUploadWidget = () => {
+    const widget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: 'dmmzudque',
+        uploadPreset: 'stay4less',
+      },
+      (error, result) => {
+        if (!error && result.event === 'success') {
+          setImages((prev) => [...prev, result.info.secure_url]);
+          setCurrentImage(images.length); 
+        }
+      }
+    );
+    widget.open();
+  };
+
+  const handleDeleteImage = () => {
+    const newImages = images.filter((_, idx) => idx !== currentImage);
+    setImages(newImages);
+    setCurrentImage((prev) => (prev > 0 ? prev - 1 : 0));
   };
 
   return (
@@ -109,6 +134,52 @@ export default function EditListing() {
               <option value="homestay">Homestay</option>
             </select>
           </div>
+
+          <div className="flex justify-between">
+            <button
+              type="button"
+              onClick={handleUploadWidget}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Upload Image
+            </button>
+          </div>
+
+          {images.length > 0 && (
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <img
+                  src={images[currentImage]}
+                  alt={`Listing ${currentImage + 1}`}
+                  className="h-48 rounded border mb-2"
+                />
+                <button
+                  onClick={handleDeleteImage}
+                  className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 text-xs"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() =>
+                    setCurrentImage((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+                  }
+                  className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                >
+                  ◀
+                </button>
+                <button
+                  onClick={() =>
+                    setCurrentImage((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+                  }
+                  className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                >
+                  ▶
+                </button>
+              </div>
+            </div>
+          )}
 
           <button
             onClick={handleUpdate}

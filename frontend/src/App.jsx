@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 
-import Home from './pages/Home';
+import RoleHome from './pages/RoleHome';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProfilePage from './pages/ProfilePage';
@@ -19,7 +19,7 @@ export default function App() {
     <Router>
       <MainLayout>
     <Routes>
-       <Route path="/" element={<Home />} />
+       <Route path="/" element={<RoleHome />} />
        <Route path="/login" element={<Login />} />
        <Route path="/register" element={<Register />} />
        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>}/>
@@ -28,7 +28,7 @@ export default function App() {
        <Route path="/edit-listing/:id" element={<EditListing />} />
        <Route path="/listings/:id" element={<ListingDetails />} />
        <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['landlord']}><Dashboard /></ProtectedRoute>} />
-       <Route path="/student-dashboard" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>}/>
+       <Route path="/student-dashboard" element={<ProtectedRoute allowedRoles={['student']}><StudentDashboard /></ProtectedRoute>}/>
        <Route path="/admin" element={ <ProtectedRoute allowedRoles="admin"><AdminPanel /></ProtectedRoute>} />
     </Routes>
 

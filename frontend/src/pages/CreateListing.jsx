@@ -9,72 +9,172 @@ export default function CreateListing() {
     description: '',
     price: '',
     location: '',
-    housingType: '',
-    images: [],
+    housingType: 'private',
+    images: []
   });
-  const [uploading, setUploading] = useState(false);
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = async (e) => {
-    const files = Array.from(e.target.files);
-    const uploadPromises = files.map(async (file) => {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'your_upload_preset'); 
-      const res = await axios.post('https://api.cloudinary.com/v1_1/your_cloud_name/image/upload', formData); 
-      return res.data.secure_url;
-    });
+  const handleUploadWidget = () => {
+    const widget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: 'dmmzudque',
+        uploadPreset: 'stay4less'
+      },
+      (error, result) => {
+        if (!error && result.event === 'success') {
+          setFormData((prev) => ({
+            ...prev,
+            images: [...prev.images, result.info.secure_url]
+          }));
+          setCurrentImageIndex(formData.images.length); 
+        }
+      }
+    );
+    widget.open();
+  };
 
-    try {
-      setUploading(true);
-      const urls = await Promise.all(uploadPromises);
-      setFormData((prev) => ({ ...prev, images: [...prev.images, ...urls] }));
-    } catch (err) {
-      console.error('Image upload failed:', err);
-    } finally {
-      setUploading(false);
-    }
+  const handleDeleteImage = () => {
+    if (formData.images.length === 0) return;
+
+    const updatedImages = formData.images.filter((_, index) => index !== currentImageIndex);
+    setFormData((prev) => ({ ...prev, images: updatedImages }));
+    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : 0));
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : 0));
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev < formData.images.length - 1 ? prev + 1 : prev
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/listings', formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      await axios.post(
+        'http://localhost:5000/api/listings',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
       navigate('/dashboard');
     } catch (err) {
-      console.error('Failed to create listing:', err);
+      console.error('Listing creation failed:', err);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 text-black">
-      <h1 className="text-3xl font-bold mb-6">Create New Listing</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white bg-opacity-90 p-6 rounded shadow">
-        <input name="title" placeholder="Title" className="p-2 border rounded w-full" onChange={handleChange} required />
-        <textarea name="description" placeholder="Description" className="p-2 border rounded w-full" onChange={handleChange} required />
-        <input name="price" type="number" placeholder="Price" className="p-2 border rounded w-full" onChange={handleChange} required />
-        <input name="location" placeholder="Location" className="p-2 border rounded w-full" onChange={handleChange} required />
-        <select name="housingType" className="p-2 border rounded w-full" onChange={handleChange} required>
-          <option value="">Select Housing Type</option>
-          <option value="shared">Shared</option>
+    <div className="max-w-2xl mx-auto p-6 text-black">
+      <h1 className="text-3xl font-bold mb-6">Create Listing</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="Title"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          placeholder="Description"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="number"
+          name="price"
+          value={formData.price}
+          onChange={handleChange}
+          placeholder="Price"
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="text"
+          name="location"
+          value={formData.location}
+          onChange={handleChange}
+          placeholder="Location"
+          className="w-full border p-2 rounded"
+          required
+        />
+
+        <select
+          name="housingType"
+          value={formData.housingType}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+        >
           <option value="private">Private</option>
+          <option value="shared">Shared</option>
           <option value="homestay">Homestay</option>
         </select>
-        <input type="file" multiple accept="image/*" onChange={handleFileChange} className="w-full" />
-        {uploading && <p className="text-sm text-gray-600">Uploading...</p>}
-        <div className="grid grid-cols-3 gap-2">
-          {formData.images.map((url, i) => (
-            <img key={i} src={url} alt="Preview" className="h-24 w-full object-cover rounded" />
-          ))}
-        </div>
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Create Listing</button>
+
+        <button
+          type="button"
+          onClick={handleUploadWidget}
+          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+        >
+          Upload Image
+        </button>
+
+        {formData.images.length > 0 && (
+          <div className="flex flex-col items-center">
+            <img
+              src={formData.images[currentImageIndex]}
+              alt="Uploaded"
+              className="h-40 object-cover rounded mb-2"
+            />
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={handlePrevImage}
+                disabled={currentImageIndex === 0}
+                className="bg-gray-700 text-white px-4 py-1 rounded disabled:opacity-50"
+              >
+                ◀ Prev
+              </button>
+              <button
+                type="button"
+                onClick={handleNextImage}
+                disabled={currentImageIndex === formData.images.length - 1}
+                className="bg-gray-700 text-white px-4 py-1 rounded disabled:opacity-50"
+              >
+                Next ▶
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteImage}
+                className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
+              >
+                🗑 Delete
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Create Listing
+        </button>
       </form>
     </div>
   );

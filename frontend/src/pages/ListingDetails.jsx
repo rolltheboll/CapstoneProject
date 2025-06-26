@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import mapboxgl from 'mapbox-gl';
 import { useAuth } from '../hooks/useAuth';
+
+mapboxgl.accessToken = 'pk.eyJ1Ijoicm9mbGxtYW8iLCJhIjoiY21icm90M2dpMGV1NjJrb2h4Y3dlaWpnMSJ9.-bnR3KFZU21AO3qSC7hgoA';
 
 export default function ListingDetails() {
   const { id } = useParams();
+  const mapContainerRef = useRef(null);
   const [listing, setListing] = useState(null);
   const [message, setMessage] = useState('');
   const [inquirySent, setInquirySent] = useState(false);
@@ -48,6 +52,28 @@ export default function ListingDetails() {
     fetchListing();
     fetchReviews();
   }, [id, user]);
+
+  useEffect(() => {
+    if (listing?.coordinates) {
+      const { lat, lng } = listing.coordinates;
+
+      const map = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [lng, lat],
+        zoom: 12,
+      });
+
+      new mapboxgl.Marker().setLngLat([lng, lat]).addTo(map);
+
+      // Fix squished layout
+      setTimeout(() => {
+        map.resize();
+      }, 200);
+
+      return () => map.remove();
+    }
+  }, [listing]);
 
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
@@ -109,7 +135,7 @@ export default function ListingDetails() {
   if (!listing) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 text-black">
+    <div className="max-w-3xl mx-auto px-4 py-8 text-black bg-white bg-opacity-90 rounded shadow">
       <h1 className="text-3xl font-bold mb-4">{listing.title}</h1>
       <p className="text-gray-600 mb-2">{listing.location}</p>
       <p className="text-blue-600 text-lg font-semibold mb-2">${listing.price}</p>
@@ -122,6 +148,16 @@ export default function ListingDetails() {
           alt="Listing"
           className="w-full max-h-96 object-cover rounded mb-6"
         />
+      )}
+
+      {listing.coordinates && (
+        <div className="mb-6 rounded overflow-hidden border">
+          <div
+            ref={mapContainerRef}
+            className="h-64 w-full"
+            style={{ minHeight: '256px' }}
+          />
+        </div>
       )}
 
       {user?.role === 'student' && (
@@ -150,44 +186,36 @@ export default function ListingDetails() {
         </div>
       )}
 
-<div className="mt-12">
-  <h2 className="text-xl font-semibold mb-4">Reviews</h2>
-  {reviews.length === 0 ? (
-    <p>No reviews yet.</p>
-  ) : (
-    <ul className="space-y-4">
-    {reviews.map((review) => {
-      const reviewAuthorId =
-        typeof review.student === 'object' ? review.student._id : review.student;
-      const isAuthor = user && reviewAuthorId === user._id;
-  
-      console.log('review._id:', review._id);
-      console.log('review.student:', review.student);
-      console.log('resolved reviewAuthorId:', reviewAuthorId);
-      console.log('user._id:', user?._id);
-      console.log('isAuthor:', isAuthor);
-  
-      return (
-        <li key={review._id} className="border p-4 rounded bg-white shadow">
-          <p className="font-semibold">{review.student?.name || 'Anonymous'}</p>
-          <p className="text-yellow-600">Rating: {review.rating}/5</p>
-          <p>{review.comment}</p>
-          {isAuthor && (
-            <button
-              onClick={() => handleDeleteReview(review._id)}
-              className="text-red-600 text-sm hover:underline mt-2"
-            >
-              Delete
-            </button>
-          )}
-        </li>
-      );
-    })}
-  </ul>
-  
-  )}
-</div>
+      <div className="mt-12">
+        <h2 className="text-xl font-semibold mb-4">Reviews</h2>
+        {reviews.length === 0 ? (
+          <p>No reviews yet.</p>
+        ) : (
+          <ul className="space-y-4">
+            {reviews.map((review) => {
+              const reviewAuthorId =
+                typeof review.student === 'object' ? review.student._id : review.student;
+              const isAuthor = user && reviewAuthorId === user._id;
 
+              return (
+                <li key={review._id} className="border p-4 rounded bg-white shadow">
+                  <p className="font-semibold">{review.student?.name || 'Anonymous'}</p>
+                  <p className="text-yellow-600">Rating: {review.rating}/5</p>
+                  <p>{review.comment}</p>
+                  {isAuthor && (
+                    <button
+                      onClick={() => handleDeleteReview(review._id)}
+                      className="text-red-600 text-sm hover:underline mt-2"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
 
       {user?.role === 'student' && !reviewed && (
         <div className="mt-8">
