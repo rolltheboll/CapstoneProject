@@ -15,6 +15,9 @@ export default function Listings() {
     priceMax: '',
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const listingsPerPage = 8;
+
   const fetchListings = async () => {
     try {
       const params = new URLSearchParams();
@@ -26,6 +29,7 @@ export default function Listings() {
       const res = await axios.get(`http://localhost:5000/api/listings?${params.toString()}`);
       setListings(res.data);
       setError('');
+      setCurrentPage(1);
     } catch (err) {
       setError('Failed to fetch listings');
     }
@@ -86,6 +90,11 @@ export default function Listings() {
     fetchListings();
   };
 
+  const indexOfLast = currentPage * listingsPerPage;
+  const indexOfFirst = indexOfLast - listingsPerPage;
+  const currentListings = listings.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(listings.length / listingsPerPage);
+
   return (
     <div className="w-full max-w-screen-xl mx-auto px-6 py-8 text-black">
       <h1 className="text-3xl font-bold mb-6">Available Listings</h1>
@@ -140,7 +149,7 @@ export default function Listings() {
       {error && <p className="text-red-600 mb-4">{error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-        {listings.map((listing) => {
+        {currentListings.map((listing) => {
           const isFavorite = favorites.includes(listing._id);
 
           return (
@@ -174,6 +183,26 @@ export default function Listings() {
           );
         })}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-8">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(prev => prev - 1)}
+            className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+          <span>Page {currentPage}</span>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(prev => prev + 1)}
+            className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
