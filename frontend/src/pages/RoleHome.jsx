@@ -28,7 +28,7 @@ export default function RoleHome() {
     landlord: {
       title: 'Welcome to Stay4less!',
       description:
-        'As a landlord, you can create listings, manage your properties, and respond to student inquiries (not yet, coming soon).',
+        'As a landlord, you can create listings, manage your properties, and respond to student inquiries.',
       image: '/assets/landlord.jpg',
       actions: [
         { label: 'Manage Listings', path: '/dashboard' },

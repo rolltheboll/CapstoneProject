@@ -4,7 +4,8 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import { useAuth } from '../hooks/useAuth';
 
-mapboxgl.accessToken = 'pk.eyJ1Ijoicm9mbGxtYW8iLCJhIjoiY21icm90M2dpMGV1NjJrb2h4Y3dlaWpnMSJ9.-bnR3KFZU21AO3qSC7hgoA';
+mapboxgl.accessToken =
+  'pk.eyJ1Ijoicm9mbGxtYW8iLCJhIjoiY21icm90M2dpMGV1NjJrb2h4Y3dlaWpnMSJ9.-bnR3KFZU21AO3qSC7hgoA';
 
 export default function ListingDetails() {
   const { id } = useParams();
@@ -17,6 +18,7 @@ export default function ListingDetails() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [reviewed, setReviewed] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const { user } = useAuth();
 
@@ -40,9 +42,7 @@ export default function ListingDetails() {
               ? r.student === user._id
               : r.student._id === user._id
           );
-          if (existing) {
-            setReviewed(true);
-          }
+          if (existing) setReviewed(true);
         }
       } catch (err) {
         console.error('Failed to load reviews:', err);
@@ -56,7 +56,6 @@ export default function ListingDetails() {
   useEffect(() => {
     if (listing?.coordinates) {
       const { lat, lng } = listing.coordinates;
-
       const map = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: 'mapbox://styles/mapbox/streets-v11',
@@ -65,12 +64,7 @@ export default function ListingDetails() {
       });
 
       new mapboxgl.Marker().setLngLat([lng, lat]).addTo(map);
-
-      // Fix squished layout
-      setTimeout(() => {
-        map.resize();
-      }, 200);
-
+      setTimeout(() => map.resize(), 200);
       return () => map.remove();
     }
   }, [listing]);
@@ -117,7 +111,6 @@ export default function ListingDetails() {
 
   const handleDeleteReview = async (reviewId) => {
     if (!window.confirm('Are you sure you want to delete this review?')) return;
-
     try {
       await axios.delete(`http://localhost:5000/api/reviews/${reviewId}`, {
         headers: {
@@ -128,6 +121,25 @@ export default function ListingDetails() {
       setReviewed(false);
     } catch (err) {
       console.error('Failed to delete review:', err);
+    }
+  };
+
+  const handleReport = async () => {
+    if (!window.confirm('Are you sure you want to report this listing?')) return;
+    try {
+      await axios.post(
+        'http://localhost:5000/api/reports',
+        { listingId: id, reason: 'Inappropriate or misleading listing.' },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+      alert('Listing has been reported. Thank you for your feedback.');
+    } catch (err) {
+      console.error('Failed to report listing:', err);
+      alert('There was an error reporting this listing.');
     }
   };
 
@@ -143,11 +155,40 @@ export default function ListingDetails() {
       <p className="mb-6">{listing.description}</p>
 
       {listing.images?.length > 0 && (
-        <img
-          src={listing.images[0]}
-          alt="Listing"
-          className="w-full max-h-96 object-cover rounded mb-6"
-        />
+        <div className="mb-6">
+          <img
+            src={listing.images[currentImageIndex]}
+            alt={`Listing ${currentImageIndex + 1}`}
+            className="w-full max-h-96 object-cover rounded mb-2"
+          />
+          {listing.images.length > 1 && (
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() =>
+                  setCurrentImageIndex((prev) =>
+                    prev > 0 ? prev - 1 : listing.images.length - 1
+                  )
+                }
+                className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700"
+              >
+                ◀ Prev
+              </button>
+              <span className="self-center text-sm text-gray-600">
+                {currentImageIndex + 1} / {listing.images.length}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentImageIndex((prev) =>
+                    prev < listing.images.length - 1 ? prev + 1 : 0
+                  )
+                }
+                className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700"
+              >
+                Next ▶
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
       {listing.coordinates && (
@@ -161,8 +202,8 @@ export default function ListingDetails() {
       )}
 
       {user?.role === 'student' && (
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-2">Send Inquiry</h2>
+        <div className="mt-8 space-y-4">
+          <h2 className="text-xl font-semibold">Send Inquiry</h2>
           {inquirySent ? (
             <p className="text-green-600">Inquiry sent successfully!</p>
           ) : (
@@ -183,6 +224,12 @@ export default function ListingDetails() {
               </button>
             </form>
           )}
+          <button
+            onClick={handleReport}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            🚩 Report Listing
+          </button>
         </div>
       )}
 
@@ -194,7 +241,9 @@ export default function ListingDetails() {
           <ul className="space-y-4">
             {reviews.map((review) => {
               const reviewAuthorId =
-                typeof review.student === 'object' ? review.student._id : review.student;
+                typeof review.student === 'object'
+                  ? review.student._id
+                  : review.student;
               const isAuthor = user && reviewAuthorId === user._id;
 
               return (

@@ -1,4 +1,6 @@
 const Listing = require('../models/Listing');
+const Inquiry = require('../models/Inquiry');
+
 
 
 const geocodeAddress = require('../config/mapbox');
@@ -103,21 +105,28 @@ exports.updateListing = async (req, res) => {
 
 exports.deleteListing = async (req, res) => {
   try {
-    const listing = await Listing.findById(req.params.id);
+    const listing = await Listing.findById(req.params.id); 
     if (!listing) return res.status(404).json({ msg: 'Listing not found' });
 
     if (
-      listing.landlord.toString() !== req.user.id &&
-      req.user.role !== 'admin'
+      req.user.role !== 'admin' &&
+      listing.landlord.toString() !== req.user.id
     ) {
-      return res.status(403).json({ msg: 'Not authorized' });
+      return res.status(403).json({ msg: 'Access denied' });
     }
 
-    await listing.deleteOne(); 
-    res.status(200).json({ msg: 'Listing deleted' });
+    await Inquiry.deleteMany({ listing: req.params.id }); 
+    await listing.deleteOne();
+
+    res.status(200).json({ msg: 'Listing and related inquiries deleted' });
   } catch (err) {
-    console.error(err);
+    console.error('Error deleting listing:', err);
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+
+
+
+
 

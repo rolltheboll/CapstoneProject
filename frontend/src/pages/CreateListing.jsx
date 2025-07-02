@@ -32,7 +32,7 @@ export default function CreateListing() {
             ...prev,
             images: [...prev.images, result.info.secure_url]
           }));
-          setCurrentImageIndex(formData.images.length); 
+          setCurrentImageIndex(formData.images.length);
         }
       }
     );
@@ -77,7 +77,7 @@ export default function CreateListing() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 text-black">
-      <h1 className="text-3xl font-bold mb-6">Create Listing</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Create Listing</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -114,7 +114,6 @@ export default function CreateListing() {
           className="w-full border p-2 rounded"
           required
         />
-
         <select
           name="housingType"
           value={formData.housingType}
@@ -126,16 +125,26 @@ export default function CreateListing() {
           <option value="homestay">Homestay</option>
         </select>
 
-        <button
-          type="button"
-          onClick={handleUploadWidget}
-          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-        >
-          Upload Image
-        </button>
+        {/* Button Row Centered */}
+        <div className="flex justify-center gap-6 mt-4">
+          <button
+            type="button"
+            onClick={handleUploadWidget}
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+          >
+            Upload Image
+          </button>
+
+          <button
+            type="submit"
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Create Listing
+          </button>
+        </div>
 
         {formData.images.length > 0 && (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center mt-6">
             <img
               src={formData.images[currentImageIndex]}
               alt="Uploaded"
@@ -168,13 +177,6 @@ export default function CreateListing() {
             </div>
           </div>
         )}
-
-        <button
-          type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Create Listing
-        </button>
       </form>
     </div>
   );
