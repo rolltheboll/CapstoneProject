@@ -116,7 +116,6 @@ export default function Listings() {
             className="p-2 border rounded w-full"
           >
             <option value="">All Types</option>
-            <option value="apartment">Apartment</option>
             <option value="shared">Shared</option>
             <option value="homestay">Homestay</option>
             <option value="private">Private</option>

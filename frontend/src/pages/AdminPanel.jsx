@@ -114,7 +114,7 @@ export default function AdminPanel() {
       <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
       {error && <p className="text-red-600 mb-4">{error}</p>}
 
-      {/* USERS */}
+      
       <section className="mb-10">
         <div className="flex justify-between mb-2">
           <h2 className="text-2xl font-semibold">Users</h2>
@@ -148,7 +148,7 @@ export default function AdminPanel() {
         </div>
       </section>
 
-      {/* LISTINGS */}
+      
       <section className="mb-10">
         <div className="flex justify-between mb-2">
           <h2 className="text-2xl font-semibold">Listings</h2>
