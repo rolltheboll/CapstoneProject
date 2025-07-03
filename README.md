@@ -25,7 +25,7 @@ The app will allow users to:
    
 **Frontend:**
 
-•	React 
+•	React + Vite
 
 •	Tailwind CSS 
 
@@ -104,7 +104,11 @@ Stretch Features
 
 •	O2auth
 
+**New features implemented**:
+- Created a message thread between landlords and students so they can exchange messages after an inquiry is sent
+- Added a report controller to flag inappropriate listings or scams
 
+-----------------------------------------------------------------------------------------------------------------------------
 7.	User Stories:
 
 As a student:
@@ -127,14 +131,11 @@ As an admin:
 
 
 
-
-
-
-
  
 **High-Level Design**
 
-![Architecture](https://github.com/user-attachments/assets/fb2ff4b7-b0ed-4b98-88ed-f1c315764693)
+![Architecture](https://github.com/user-attachments/assets/50208983-03f2-470f-895d-f56ddb95882a)
+
 
 
 For the UI design I will take this as inspiration:
