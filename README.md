@@ -11,7 +11,7 @@ International students arriving in Canada often struggle to find safe and afford
 The app will allow users to:
 •	Create accounts as either students or landlords.
 
-•	Students can search for accommodation by city, institution, price, or housing type (shared, private, homestay, etc.)
+•	Students can search for accommodation by city, price, or housing type (shared, private, homestay, etc.)
 
 •	Landlords can post and manage listings with images, pricing, and descriptions.
 
